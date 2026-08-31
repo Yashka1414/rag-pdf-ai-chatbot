@@ -6,7 +6,9 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_groq import ChatGroq
-from langchain.chains import create_retrieval_chain
+
+# Updated LangChain Imports to fix ModuleNotFoundError
+from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -36,10 +38,8 @@ if api_key:
                 ("human", "{input}")
             ])
             
-            chain = create_retrieval_chain(
-                vectorstore.as_retriever(), 
-                create_stuff_documents_chain(llm, prompt)
-            )
+            combine_docs_chain = create_stuff_documents_chain(llm, prompt)
+            chain = create_retrieval_chain(vectorstore.as_retriever(), combine_docs_chain)
             st.success("Vector DB ready!")
 
         user_query = st.text_input("Ask about the PDF:")
