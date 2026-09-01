@@ -1,7 +1,6 @@
 import streamlit as st
 from groq import Groq
 from pypdf import PdfReader
-import json
 
 st.set_page_config(page_title="Production RAG PDF Engine", page_icon="⚡", layout="wide")
 st.title("⚡ Production-Grade RAG PDF Engine")
@@ -50,10 +49,10 @@ if uploaded_file:
             )
             user_prompt = f"Context:\n{retrieved_context}\n\nQuestion: {query}"
             
-            # API Execution with Error Handling
+            # API Execution with Error Handling & Valid Model Name
             try:
                 res = client.chat.completions.create(
-                    model="llama-3.3-70b-versatile",
+                    model="llama-3.1-8b-instant",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
