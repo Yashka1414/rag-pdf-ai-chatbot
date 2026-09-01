@@ -24,7 +24,7 @@ if uploaded_file:
     try:
         reader = PdfReader(uploaded_file)
         full_text = "".join([page.extract_text() or "" for page in reader.pages])
-        
+
         # Overlapping Text Chunking Strategy
         chunk_size, overlap = 600, 100
         chunks = [full_text[i:i + chunk_size] for i in range(0, len(full_text), chunk_size - overlap)]
@@ -41,31 +41,31 @@ if uploaded_file:
             query_words = set(query.lower().split())
             scored_chunks = sorted(chunks, key=lambda c: sum(1 for w in query_words if w in c.lower()), reverse=True)
             retrieved_context = "\n---\n".join(scored_chunks[:3])
-            
+
             # Explicit Zero-Shot System Prompt (Prevents Hallucinations)
             system_prompt = (
                 "You are an enterprise RAG Engine. Answer the user's question STRICTLY using only the provided context. "
                 "If the answer cannot be determined from the context, state 'Information not found in document.'"
             )
             user_prompt = f"Context:\n{retrieved_context}\n\nQuestion: {query}"
-            
+
             # API Execution with Error Handling & Valid Model Name
             try:
                 res = client.chat.completions.create(
-                    model="llama-3.1-8b-instant",
+                    model="openai/gpt-oss-20b",  # updated: llama-3.1-8b-instant was deprecated by Groq
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
                     ],
                     temperature=0.1
                 )
-                
+
                 answer = res.choices[0].message.content
                 st.markdown("### 📝 Grounded Answer")
                 st.write(answer)
-                
+
                 with st.expander("🔍 Context Retrieval Payload"):
                     st.code(retrieved_context)
-                    
+
             except Exception as e:
                 st.error(f"REST API Execution Error: {str(e)}")
