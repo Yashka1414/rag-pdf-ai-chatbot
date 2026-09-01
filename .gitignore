@@ -1,0 +1,12 @@
+# Local environment & keys
+.env
+*.env
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Streamlit local settings
+.streamlit/secrets.toml
